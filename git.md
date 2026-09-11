@@ -1,72 +1,70 @@
-# Git 常用命令笔记
+# Git 常用命令
+
+## 高频速查
 
 ```bash
-git init                    # 初始化项目
-git branch -M main          # 把默认分支改为 main
-git add .                   # 添加所有改动到暂存区
-git commit -m "提交说明"     # 提交到本地仓库
-git remote add origin <地址> # 绑定远程仓库
-git push -u origin main     # 第一次推送并跟踪主分支
-git pull origin main        # 拉取远程更新
-git switch <分支名>         # 切换分支
-git switch -c <分支名>      # 创建并切换分支
-git branch                  # 查看分支
-git log --oneline           # 查看提交记录
-git stash                  # 暂存当前修改
-git reset --hard HEAD~1    # 回退到上一条提交
+git status                         # 查看当前分支和修改
+git add <文件>                     # 暂存指定文件
+git add .                          # 暂存全部修改
+git diff                          # 查看未暂存差异
+git diff --staged                  # 查看已暂存差异
+git commit -m "说明"              # 提交
+git pull --rebase                 # 拉取并整理本地提交
+git push                          # 推送当前分支
 ```
 
+## 分支和远程
+
 ```bash
-# 常用补充
-git status                         # 查看当前状态
-git diff                          # 查看工作区差异
-git diff --staged                 # 查看暂存区差异
-git add <文件名>                  # 添加单个文件
-git commit --amend -m "修正说明"  # 修改最近一次提交说明
-git remote -v                     # 查看远程仓库地址
-git fetch origin                  # 拉取远程分支信息
-git merge <分支名>                # 合并分支
-git revert <提交号>              # 反向回退某次提交
+git branch                        # 查看本地分支
+git branch -a                     # 查看所有分支
+git switch <分支>                 # 切换分支
+git switch -c feature/demo        # 创建并切换新分支
+git branch -M main                # 重命名当前分支
+git push -u origin <分支>         # 首次推送并建立跟踪
+git remote -v                     # 查看远程地址
+git fetch --all --prune           # 更新远程分支
+git pull origin main              # 拉取指定分支
+```
+
+## 暂存、撤销与历史
+
+```bash
+git stash                         # 暂存未提交修改
+git stash pop                     # 恢复最近一次暂存
 git restore --staged <文件>       # 取消暂存
-git restore <文件>                # 恢复文件到最近提交
+git restore <文件>                # 丢弃指定文件修改（谨慎）
+git revert <提交号>               # 安全撤销历史提交
+git log --oneline --graph --all   # 查看提交图
+git show <提交号>                 # 查看某次提交
 ```
+
+`git reset --hard` 会直接丢弃未提交修改，执行前确认没有需要保留的内容。
+
+## 代理配置
 
 ```bash
-# 一个项目的最短流程
-git init
-git branch -M main
-git add .
-git commit -m "first commit"
-git remote add origin <仓库地址>
-git push -u origin main
+git config --global http.proxy http://127.0.0.1:7890
+git config --global https.proxy http://127.0.0.1:7890
+git config --global --unset http.proxy       # 取消 HTTP 代理
+git config --global --unset https.proxy      # 取消 HTTPS 代理
+git config --show-origin --get-regexp 'proxy' # 查看代理配置
 ```
 
-```bash
-# 普通工作流
-git pull origin main
-git switch -c feature/demo
-git add .
-git commit -m "新增功能"
-git push -u origin feature/demo
+SSH 地址代理配置（`~/.ssh/config`）：
+
+```sshconfig
+Host github.com
+    ProxyCommand nc -X 5 -x 127.0.0.1:7890 %h %p
 ```
 
-- 提交前先 `git status`，确认修改内容
-- 提交信息尽量简短且清晰
-- 多人协作时先 `git pull` 再开发
-- 不要在主分支上直接提交，优先使用分支
-- 重要回退操作优先用 `git revert`，避免丢失历史
-
----
-
-## 15. 一份最简工作流
+## 新项目首次推送
 
 ```bash
 git init
-git add .
-git commit -m "first commit"
 git branch -M main
+git add .
+git commit -m "initial commit"
 git remote add origin <仓库地址>
 git push -u origin main
 ```
-
-这是一套最常见的 Git 使用流程，适合新手快速上手。
